@@ -19,16 +19,17 @@ export default class Sketch {
 
         this.container.appendChild(this.renderer.domElement)
 
-        this.camera = new THREE.PerspectiveCamera(
-            70,
-            window.innerWidth / window.innerHeight,
-            0.001,
-            1000
-        )
+        // this.camera = new THREE.PerspectiveCamera(
+        //     70,
+        //     window.innerWidth / window.innerHeight,
+        //     0.001,
+        //     1000
+        // )
 
-        // var frustumSize = 10;
-        // var aspect = window.innerWidth / window.innerHeight;
+        var frustumSize = 1;
+        var aspect = window.innerWidth / window.innerHeight;
         // this.camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -1000, 1000 );
+        this.camera = new THREE.OrthographicCamera( frustumSize  / - 2, frustumSize  / 2, frustumSize / 2, frustumSize / - 2, -1000, 1000 );
         this.camera.position.set(0, 0, 2)
         this.controls = new OrbitControls(this.camera, this.renderer.domElement)
         this.time = 0
