@@ -1,8 +1,10 @@
 import * as THREE from 'three'
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
+
 import fragment from './shader/fragment.glsl'
 import vertex from './shader/vertex.glsl'
-
-let OrbitControls = require('three-orbit-controls')(THREE)
+import * as dat from 'dat.gui'
+//import gsap as from 'gsap'
 
 export default class Sketch {
     constructor(options) {
@@ -15,6 +17,7 @@ export default class Sketch {
         this.renderer.setPixelRatio(window.devicePixelRatio)
         this.renderer.setSize(this.width, this.height)
         this.renderer.setClearColor(0xeeeeee, 1)
+        this.renderer.physicallyCorrectLights = true
         this.renderer.outputEncoding = THREE.sRGBEncoding
 
         this.container.appendChild(this.renderer.domElement)
@@ -26,10 +29,10 @@ export default class Sketch {
         //     1000
         // )
 
-        var frustumSize = 1;
-        var aspect = window.innerWidth / window.innerHeight;
+        var frustumSize = 1
+        var aspect = window.innerWidth / window.innerHeight
         // this.camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -1000, 1000 );
-        this.camera = new THREE.OrthographicCamera( frustumSize  / - 2, frustumSize  / 2, frustumSize / 2, frustumSize / - 2, -1000, 1000 );
+        this.camera = new THREE.OrthographicCamera(frustumSize / -2, frustumSize / 2, frustumSize / 2, frustumSize / -2, -1000, 1000)
         this.camera.position.set(0, 0, 2)
         this.controls = new OrbitControls(this.camera, this.renderer.domElement)
         this.time = 0
@@ -44,7 +47,6 @@ export default class Sketch {
     }
 
     settings() {
-        let that = this
         this.settings = {
             progress: 0,
         }
@@ -62,18 +64,38 @@ export default class Sketch {
         this.renderer.setSize(this.width, this.height)
         this.camera.aspect = this.width / this.height
         this.camera.updateProjectionMatrix()
+
+        this.imageAspect = 1
+        let a1, a2
+        if (this.height / this.width > this.imageAspect) {
+            a1 = (this.width / this.height) * this.imageAspect
+            a2 = 1
+        } else {
+            a1 = 1
+            a2 = (this.height / this.width) / this.imageAspect
+        }
+
+        this.material.uniforms.resolution.value.x = this.width
+        this.material.uniforms.resolution.value.y = this.height
+        this.material.uniforms.resolution.value.z = a1
+        this.material.uniforms.resolution.value.w = a2
     }
 
     addObjects() {
-        let that = this
         this.material = new THREE.ShaderMaterial({
             extensions: {
                 derivatives: '#extension GL_OES_standard_derivatives : enable'
             },
             side: THREE.DoubleSide,
             uniforms: {
-                time: {type: 'f', value: 0},
-                resolution: {type: 'v4', value: new THREE.Vector4()},
+                time: {
+                    type: 'f',
+                    value: 0
+                },
+                resolution: {
+                    type: 'v4',
+                    value: new THREE.Vector4()
+                },
                 uvRate1: {
                     value: new THREE.Vector2(1, 1)
                 }
