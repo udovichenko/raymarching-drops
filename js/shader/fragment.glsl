@@ -17,6 +17,11 @@ mat4 rotationMatrix(vec3 axis, float angle) {
     0.0, 0.0, 0.0, 1.0);
 }
 
+float smin(float a, float b, float k) {
+    float h = clamp(0.5+0.5*(b-a)/k, 0.0, 1.0);
+    return mix(b, a, h) - k*h*(1.0-h);
+}
+
 vec3 rotate(vec3 v, vec3 axis, float angle) {
     mat4 m = rotationMatrix(axis, angle);
     return (m * vec4(v, 1.0)).xyz;
@@ -33,9 +38,10 @@ float sdBox(vec3 p, vec3 b) {
 
 float sdf(vec3 p) {
     vec3 p1 = rotate(p, vec3(1.), time/5.);
-    float box = sdBox(p1, vec3(0.2));
+    float box = sdBox(p1, vec3(0.3));
     float sphere = sdSphere(p, 0.4);
-    return box;
+    //    return box;
+    return smin(box, sphere, 0.2);
 }
 
 vec3 calcNormal(in vec3 p) {
