@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
+import Stats from 'three/examples/jsm/libs/stats.module.js'
 
 import fragment from './shader/fragment.glsl'
 import vertex from './shader/vertex.glsl'
@@ -9,6 +10,9 @@ import * as dat from 'dat.gui'
 export default class Sketch {
     constructor(options) {
         this.scene = new THREE.Scene()
+
+        this.stats = new Stats()
+        document.body.appendChild(this.stats.dom)
 
         this.container = options.dom
         this.width = this.container.offsetWidth
@@ -129,6 +133,8 @@ export default class Sketch {
         this.material.uniforms.time.value = this.time
         requestAnimationFrame(this.render.bind(this))
         this.renderer.render(this.scene, this.camera)
+
+        this.stats.update()
     }
 }
 
