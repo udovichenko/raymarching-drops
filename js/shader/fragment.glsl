@@ -1,6 +1,6 @@
 uniform float time;
 uniform float progress;
-uniform sampler2D texture1;
+uniform sampler2D matcap;
 uniform vec4 resolution;
 varying vec2 vUv;
 float PI = 3.141592653589793238;
@@ -15,6 +15,12 @@ mat4 rotationMatrix(vec3 axis, float angle) {
     oc * axis.x * axis.y + axis.z * s, oc * axis.y * axis.y + c, oc * axis.y * axis.z - axis.x * s, 0.0,
     oc * axis.z * axis.x - axis.y * s, oc * axis.y * axis.z + axis.x * s, oc * axis.z * axis.z + c, 0.0,
     0.0, 0.0, 0.0, 1.0);
+}
+
+vec2 getMatcap(vec3 eye, vec3 normal) {
+    vec3 reflected = reflect(eye, normal);
+    float m = 2.8284271247461903 * sqrt(reflected.z+1.0);
+    return reflected.xy / m + 0.5;
 }
 
 float smin(float a, float b, float k) {
@@ -72,7 +78,9 @@ void main() {
         vec3 normal = calcNormal(pos);
         color = normal;
         float diff = dot(vec3(1.), normal);
-        color = vec3(diff);
+        vec2 matcapUV = getMatcap(ray, normal);
+//        color = vec3(diff);
+        color = texture2D(matcap, matcapUV).rgb;
     }
 
     gl_FragColor = vec4(color, 1.);

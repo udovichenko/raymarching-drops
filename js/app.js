@@ -6,6 +6,7 @@ import fragment from './shader/fragment.glsl'
 import vertex from './shader/vertex.glsl'
 import * as dat from 'dat.gui'
 //import gsap as from 'gsap'
+import matcap from '../img/matcap_solaris.png'
 
 export default class Sketch {
     constructor(options) {
@@ -33,8 +34,8 @@ export default class Sketch {
         //     1000
         // )
 
-        var frustumSize = 1
-        var aspect = window.innerWidth / window.innerHeight
+        let frustumSize = 1
+        // let aspect = window.innerWidth / window.innerHeight
         // this.camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -1000, 1000 );
         this.camera = new THREE.OrthographicCamera(frustumSize / -2, frustumSize / 2, frustumSize / 2, frustumSize / -2, -1000, 1000)
         this.camera.position.set(0, 0, 2)
@@ -95,6 +96,9 @@ export default class Sketch {
                 time: {
                     type: 'f',
                     value: 0
+                },
+                matcap: {
+                    value: new THREE.TextureLoader().load(matcap)
                 },
                 resolution: {
                     type: 'v4',
