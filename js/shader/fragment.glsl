@@ -59,6 +59,8 @@ vec3 calcNormal(in vec3 p) {
 }
 
 void main() {
+    float dist = length(vUv - vec2(0.5));
+    vec3 bg = mix(vec3(0.3), vec3(0.0), dist);
     vec2 newUV = (vUv - vec2(0.5))*resolution.zw + vec2(0.5);
     vec3 camPos = vec3(0., 0., 2.);
     vec3 ray = normalize(vec3((vUv - vec2(0.5)) * resolution.zw, -1));
@@ -74,7 +76,7 @@ void main() {
         t+=h;
     }
 
-    vec3 color = vec3(0.);
+    vec3 color = bg;
     if (t<tMax) {
         vec3 pos = camPos + t * ray;
         color = vec3(1.);
@@ -84,7 +86,13 @@ void main() {
         vec2 matcapUV = getMatcap(ray, normal);
         //        color = vec3(diff);
         color = texture2D(matcap, matcapUV).rgb;
+
+        float fresnel = pow(1. + dot(ray, normal), 3.);
+//        color = vec3(fresnel);
+
+        color = mix(color,bg,fresnel);
     }
 
     gl_FragColor = vec4(color, 1.);
+//    gl_FragColor = vec4(fresnel);
 }
