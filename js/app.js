@@ -65,7 +65,7 @@ export default class Sketch {
 
     settings() {
         this.settings = {
-            progress: .9
+            progress: .2
         }
         this.gui = new dat.GUI()
         this.gui.add(this.settings, 'progress', 0, 1, 0.01)

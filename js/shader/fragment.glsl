@@ -43,13 +43,27 @@ float sdBox(vec3 p, vec3 b) {
     return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 
+float rand(vec2 co){
+    return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 float sdf(vec3 p) {
     vec3 p1 = rotate(p, vec3(1.), time / 5.);
-    float box = smin(sdBox(p1, vec3(0.3)), sdSphere(p, 0.3), 0.3);
+    float box = smin(sdBox(p1, vec3(0.2)), sdSphere(p, 0.2), 0.3);
+
     float realsphere = sdSphere(p1, 0.3);
     float final = mix(box, realsphere, progress);
-    float sphere = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), 0.4);
-    return smin(final, sphere, 0.4);
+
+    for (float i=0.;i<10.;i++) {
+        float randOffset = rand(vec2(i, 0.));
+        float progr = 1. - fract(time/3. + randOffset);
+        vec3 pos = vec3(sin(randOffset*2.*PI), cos(randOffset*2.*PI), 0);
+        float gotoCenter = sdSphere(p - pos * progr, 0.1);
+        final = smin(final, gotoCenter, 0.3);
+    }
+
+    float mouseSphere = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), 0.2);
+    return smin(final, mouseSphere, 0.4);
 }
 
 vec3 calcNormal(in vec3 p) {
@@ -88,11 +102,11 @@ void main() {
         color = texture2D(matcap, matcapUV).rgb;
 
         float fresnel = pow(1. + dot(ray, normal), 3.);
-//        color = vec3(fresnel);
+        //        color = vec3(fresnel);
 
-        color = mix(color,bg,fresnel);
+        color = mix(color, bg, fresnel);
     }
 
     gl_FragColor = vec4(color, 1.);
-//    gl_FragColor = vec4(fresnel);
+    //    gl_FragColor = vec4(fresnel);
 }
