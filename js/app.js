@@ -18,7 +18,9 @@ export default class Sketch {
         this.container = options.dom
         this.width = this.container.offsetWidth
         this.height = this.container.offsetHeight
-        this.renderer = new THREE.WebGLRenderer()
+        this.renderer = new THREE.WebGLRenderer({
+            // antialias: true
+        })
         this.renderer.setPixelRatio(window.devicePixelRatio)
         this.renderer.setSize(this.width, this.height)
         this.renderer.setClearColor(0xeeeeee, 1)
@@ -39,16 +41,26 @@ export default class Sketch {
         // this.camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -1000, 1000 );
         this.camera = new THREE.OrthographicCamera(frustumSize / -2, frustumSize / 2, frustumSize / 2, frustumSize / -2, -1000, 1000)
         this.camera.position.set(0, 0, 2)
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement)
+        // this.controls = new OrbitControls(this.camera, this.renderer.domElement)
         this.time = 0
 
         this.isPlaying = true
 
+        this.mouseEvents()
         this.addObjects()
         this.resize()
         this.render()
         this.setupResize()
+
         // this.settings();
+    }
+
+    mouseEvents() {
+        this.mouse = new THREE.Vector2()
+        document.addEventListener('mousemove', (e) => {
+            this.mouse.x = e.pageX / this.width - 0.5
+            this.mouse.y = -e.pageY / this.height + 0.5
+        })
     }
 
     settings() {
@@ -97,6 +109,11 @@ export default class Sketch {
                     type: 'f',
                     value: 0
                 },
+                mouse: {
+                    mouse: {
+                        value: new THREE.Vector2(0, 0)
+                    }
+                },
                 matcap: {
                     value: new THREE.TextureLoader().load(matcap)
                 },
@@ -135,6 +152,9 @@ export default class Sketch {
         if (!this.isPlaying) return
         this.time += 0.05
         this.material.uniforms.time.value = this.time
+        if (this.mouse) {
+            this.material.uniforms.mouse.value = this.mouse
+        }
         requestAnimationFrame(this.render.bind(this))
         this.renderer.render(this.scene, this.camera)
 

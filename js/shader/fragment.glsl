@@ -1,5 +1,6 @@
 uniform float time;
 uniform float progress;
+uniform vec2 mouse;
 uniform sampler2D matcap;
 uniform vec4 resolution;
 varying vec2 vUv;
@@ -45,8 +46,8 @@ float sdBox(vec3 p, vec3 b) {
 float sdf(vec3 p) {
     vec3 p1 = rotate(p, vec3(1.), time/5.);
     float box = sdBox(p1, vec3(0.3));
-    float sphere = sdSphere(p, 0.4);
-    return smin(box, sphere, 0.2);
+    float sphere = sdSphere(p - vec3(mouse , 0.), 0.4);
+    return smin(box, sphere, 0.25);
 }
 
 vec3 calcNormal(in vec3 p) {
