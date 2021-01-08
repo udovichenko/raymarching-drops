@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
 import Stats from 'three/examples/jsm/libs/stats.module.js'
 
 import fragment from './shader/fragment.glsl'
@@ -51,15 +50,37 @@ export default class Sketch {
         this.resize()
         this.render()
         this.setupResize()
-
-        this.settings();
+        this.settings()
     }
 
     mouseEvents() {
         this.mouse = new THREE.Vector2()
-        document.addEventListener('mousemove', (e) => {
-            this.mouse.x = e.pageX / this.width - 0.5
-            this.mouse.y = -e.pageY / this.height + 0.5
+
+        let pointerEventHandler = (pos) => {
+            this.mouse.x = pos.x / this.width - 0.5
+            this.mouse.y = -pos.y / this.height + 0.5
+        }
+
+        document.addEventListener('mousemove', function(e) {
+            pointerEventHandler({
+                x: e.screenX,
+                y: e.screenY
+            })
+        }, false)
+
+        ;['touchstart', 'touchmove'].forEach(event => {
+            document.addEventListener(event, function(e) {
+                // stop touch event
+                e.stopPropagation()
+                e.preventDefault()
+
+                pointerEventHandler({
+                    x: e.touches[0].clientX,
+                    y: e.touches[0].clientY
+                })
+            }, {
+                passive: false
+            })
         })
     }
 
@@ -165,6 +186,6 @@ export default class Sketch {
     }
 }
 
-new Sketch({
+window.drops = new Sketch({
     dom: document.getElementById('container')
 })

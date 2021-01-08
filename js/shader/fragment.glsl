@@ -54,7 +54,7 @@ float sdf(vec3 p) {
     float realsphere = sdSphere(p1, 0.3);
     float final = mix(box, realsphere, progress);
 
-    for (float i=0.;i<10.;i++) {
+    for (float i=0.;i<6.;i++) {
         float randOffset = rand(vec2(i, 0.));
         float progr = 1. - fract(time/3. + randOffset);
         vec3 pos = vec3(sin(randOffset*2.*PI), cos(randOffset*2.*PI), 0);
