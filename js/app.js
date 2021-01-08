@@ -52,7 +52,7 @@ export default class Sketch {
         this.render()
         this.setupResize()
 
-        // this.settings();
+        this.settings();
     }
 
     mouseEvents() {
@@ -65,7 +65,7 @@ export default class Sketch {
 
     settings() {
         this.settings = {
-            progress: 0,
+            progress: .9
         }
         this.gui = new dat.GUI()
         this.gui.add(this.settings, 'progress', 0, 1, 0.01)
@@ -107,6 +107,9 @@ export default class Sketch {
             uniforms: {
                 time: {
                     type: 'f',
+                    value: 0
+                },
+                progress: {
                     value: 0
                 },
                 mouse: {
@@ -152,9 +155,9 @@ export default class Sketch {
         if (!this.isPlaying) return
         this.time += 0.05
         this.material.uniforms.time.value = this.time
-        if (this.mouse) {
-            this.material.uniforms.mouse.value = this.mouse
-        }
+        this.material.uniforms.progress.value = this.settings.progress
+        this.material.uniforms.mouse.value = this.mouse
+
         requestAnimationFrame(this.render.bind(this))
         this.renderer.render(this.scene, this.camera)
 

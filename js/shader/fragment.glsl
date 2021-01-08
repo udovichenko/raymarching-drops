@@ -44,10 +44,12 @@ float sdBox(vec3 p, vec3 b) {
 }
 
 float sdf(vec3 p) {
-    vec3 p1 = rotate(p, vec3(1.), time/5.);
-    float box = sdBox(p1, vec3(0.3));
-    float sphere = sdSphere(p - vec3(mouse , 0.), 0.4);
-    return smin(box, sphere, 0.25);
+    vec3 p1 = rotate(p, vec3(1.), time / 5.);
+    float box = smin(sdBox(p1, vec3(0.3)), sdSphere(p, 0.3), 0.3);
+    float realsphere = sdSphere(p1, 0.3);
+    float final = mix(box, realsphere, progress);
+    float sphere = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), 0.4);
+    return smin(final, sphere, 0.4);
 }
 
 vec3 calcNormal(in vec3 p) {
@@ -80,7 +82,7 @@ void main() {
         color = normal;
         float diff = dot(vec3(1.), normal);
         vec2 matcapUV = getMatcap(ray, normal);
-//        color = vec3(diff);
+        //        color = vec3(diff);
         color = texture2D(matcap, matcapUV).rgb;
     }
 
