@@ -51,7 +51,10 @@ float rand(vec2 co){
 vec2 sdf(vec3 p) {
     float colorType = 0.;
     vec3 p1 = rotate(p, vec3(1.), time / 5.);
+//    float s = 0.3 + 0.1 * sin(time/3.) + 0.2 * sin(time/6.) + 0.05 * sin(time);
+
     float box = smin(sdBox(p1, vec3(0.2)), sdSphere(p, 0.2), 0.3);
+//    float box = smin(sdBox(p1, vec3(s)), sdSphere(p, s), s);
 
     float realsphere = sdSphere(p1, 0.3);
 //    float final = mix(box, realsphere, progress);
