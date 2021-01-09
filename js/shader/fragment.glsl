@@ -2,6 +2,7 @@ uniform float time;
 uniform float progress;
 uniform vec2 mouse;
 uniform sampler2D matcap;
+uniform sampler2D matcap2;
 uniform vec4 resolution;
 varying vec2 vUv;
 float PI = 3.141592653589793238;
@@ -47,12 +48,14 @@ float rand(vec2 co){
     return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-float sdf(vec3 p) {
+vec2 sdf(vec3 p) {
+    float colorType = 0.;
     vec3 p1 = rotate(p, vec3(1.), time / 5.);
     float box = smin(sdBox(p1, vec3(0.2)), sdSphere(p, 0.2), 0.3);
 
     float realsphere = sdSphere(p1, 0.3);
-    float final = mix(box, realsphere, progress);
+//    float final = mix(box, realsphere, progress);
+    float final = mix(box, realsphere, 0.5 + 0.5 * sin(time / 3.));
 
     for (float i=0.;i<6.;i++) {
         float randOffset = rand(vec2(i, 0.));
@@ -62,14 +65,19 @@ float sdf(vec3 p) {
         final = smin(final, gotoCenter, 0.3);
     }
 
-    float mouseSphere = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), 0.2);
-    return smin(final, mouseSphere, 0.4);
+    float mouseSphereSize = 0.2 + 0.1 * sin(time);
+    float mouseSphere = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), mouseSphereSize);
+    if (mouseSphere<final) colorType = 1.;
+
+    return vec2(smin(final, mouseSphere, 0.4), colorType);
 }
 
 vec3 calcNormal(in vec3 p) {
     const float eps = 0.0001;
     const vec2 h = vec2(eps, 0);
-    return normalize(vec3(sdf(p+h.xyy) - sdf(p-h.xyy), sdf(p+h.yxy) - sdf(p-h.yxy), sdf(p+h.yyx) - sdf(p-h.yyx)));
+    return normalize(vec3(sdf(p+h.xyy).x - sdf(p-h.xyy).x,
+    sdf(p+h.yxy).x - sdf(p-h.yxy).x,
+    sdf(p+h.yyx).x - sdf(p-h.yyx).x));
 }
 
 void main() {
@@ -82,10 +90,12 @@ void main() {
     vec3 rayPos = camPos;
     float t = 0.;
     float tMax = 5.;
+    float type = -1.;
 
     for (int i=0;i<256;++i) {
         vec3 pos = camPos + t*ray;
-        float h = sdf(pos);
+        float h = sdf(pos).x;
+        type = sdf(pos).y;
         if (h<0.0001 || t>tMax) break;
         t+=h;
     }
@@ -99,7 +109,12 @@ void main() {
         float diff = dot(vec3(1.), normal);
         vec2 matcapUV = getMatcap(ray, normal);
         //        color = vec3(diff);
-        color = texture2D(matcap, matcapUV).rgb;
+
+        if (type<0.5){
+            color = texture2D(matcap, matcapUV).rgb;
+        } else {
+            color = texture2D(matcap2, matcapUV).rgb;
+        }
 
         float fresnel = pow(1. + dot(ray, normal), 3.);
         //        color = vec3(fresnel);

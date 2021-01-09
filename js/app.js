@@ -4,15 +4,51 @@ import Stats from 'three/examples/jsm/libs/stats.module.js'
 import fragment from './shader/fragment.glsl'
 import vertex from './shader/vertex.glsl'
 import * as dat from 'dat.gui'
-//import gsap as from 'gsap'
-import matcap from '../img/matcap_solaris.png'
+import matcap1 from '../img/grey-gloss.png'
+import matcap2 from '../img/green-red-medium.png'
+import matcap3 from '../img/green-red-blur.png'
+import matcap4 from '../img/red-metal.png'
+import matcap5 from '../img/solaris.png'
+import matcap6 from '../img/horizon.png'
+import matcap7 from '../img/black-gloss.png'
+import matcap8 from '../img/orange-metal.png'
+import matcap9 from '../img/red-violet-plastic.png'
+import matcap10 from '../img/yellow-violet-plastic.png'
+import matcap11 from '../img/grey-metal.png'
+import matcap12 from '../img/dark-violet.png'
+import matcap13 from '../img/space-grey.png'
+import matcap14 from '../img/steel.png'
 
 export default class Sketch {
+    activeMatcapId = 0
+    activeMatcapId2 = 7
+    matcaps = [
+        matcap1,
+        matcap2,
+        matcap3,
+        matcap4,
+        matcap5,
+        matcap6,
+        matcap7,
+        matcap8,
+        matcap9,
+        matcap10,
+        matcap11,
+        matcap12,
+        matcap13,
+        matcap14,
+    ]
+
     constructor(options) {
         this.scene = new THREE.Scene()
 
         this.stats = new Stats()
         document.body.appendChild(this.stats.dom)
+
+        // this.matcaps.map(img => {
+        //     img = new THREE.TextureLoader().load(img)
+        //     return img
+        // })
 
         this.container = options.dom
         this.width = this.container.offsetWidth
@@ -28,13 +64,6 @@ export default class Sketch {
 
         this.container.appendChild(this.renderer.domElement)
 
-        // this.camera = new THREE.PerspectiveCamera(
-        //     70,
-        //     window.innerWidth / window.innerHeight,
-        //     0.001,
-        //     1000
-        // )
-
         let frustumSize = 1
         // let aspect = window.innerWidth / window.innerHeight
         // this.camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -1000, 1000 );
@@ -44,6 +73,21 @@ export default class Sketch {
         this.time = 0
 
         this.isPlaying = true
+
+        document.addEventListener('click', () => {
+            this.activeMatcapId = (this.activeMatcapId !== this.matcaps.length - 1)
+                ? this.activeMatcapId + 1
+                : 0
+
+            if (this.activeMatcapId2 > this.matcaps.length - 4) {
+                this.activeMatcapId2 = this.matcaps.length % this.activeMatcapId2
+            } else {
+                this.activeMatcapId2++
+            }
+
+            this.material.uniforms.matcap.value = new THREE.TextureLoader().load(this.matcaps[this.activeMatcapId])
+            this.material.uniforms.matcap2.value = new THREE.TextureLoader().load(this.matcaps[this.activeMatcapId2])
+        })
 
         this.mouseEvents()
         this.addObjects()
@@ -88,8 +132,8 @@ export default class Sketch {
         this.settings = {
             progress: .2
         }
-        this.gui = new dat.GUI()
-        this.gui.add(this.settings, 'progress', 0, 1, 0.01)
+        // this.gui = new dat.GUI()
+        // this.gui.add(this.settings, 'progress', 0, 1, 0.01)
     }
 
     setupResize() {
@@ -139,7 +183,12 @@ export default class Sketch {
                     }
                 },
                 matcap: {
-                    value: new THREE.TextureLoader().load(matcap)
+                    // value: new THREE.TextureLoader().load(matcap)
+                    value: new THREE.TextureLoader().load(matcap1)
+                },
+                matcap2: {
+                    // value: new THREE.TextureLoader().load(matcap)
+                    value: new THREE.TextureLoader().load(matcap8)
                 },
                 resolution: {
                     type: 'v4',
@@ -149,8 +198,6 @@ export default class Sketch {
                     value: new THREE.Vector2(1, 1)
                 }
             },
-            // wireframe: true,
-            // transparent: true,
             vertexShader: vertex,
             fragmentShader: fragment
         })
@@ -177,7 +224,9 @@ export default class Sketch {
         this.time += 0.05
         this.material.uniforms.time.value = this.time
         this.material.uniforms.progress.value = this.settings.progress
+        //this.material.uniforms.progress.value = Math.sin(this.time) / 2 + 0.5
         this.material.uniforms.mouse.value = this.mouse
+
 
         requestAnimationFrame(this.render.bind(this))
         this.renderer.render(this.scene, this.camera)
