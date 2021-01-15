@@ -6,8 +6,6 @@ import vertex from './shader/vertex.glsl'
 import * as dat from 'dat.gui'
 import matcap0 from '../img/metal-gold.jpg'
 import matcap1 from '../img/metal-grey.jpg'
-import matcap20 from '../img/sasha.png'
-import matcap21 from '../img/grey-gloss.png'
 import matcap2 from '../img/green-red-medium.png'
 import matcap3 from '../img/green-red-blur.png'
 import matcap4 from '../img/red-metal.png'
@@ -21,6 +19,8 @@ import matcap11 from '../img/grey-metal.png'
 import matcap12 from '../img/dark-violet.png'
 import matcap13 from '../img/space-grey.png'
 import matcap14 from '../img/steel.png'
+import matcap15 from '../img/sasha.png'
+import matcap16 from '../img/grey-gloss.png'
 
 export default class Sketch {
     activeMatcapId = 0
@@ -41,6 +41,8 @@ export default class Sketch {
         matcap12,
         matcap13,
         matcap14,
+        matcap15,
+        matcap16
     ]
 
     constructor(options) {
@@ -48,11 +50,6 @@ export default class Sketch {
 
         this.stats = new Stats()
         document.body.appendChild(this.stats.dom)
-
-        // this.matcaps.map(img => {
-        //     img = new THREE.TextureLoader().load(img)
-        //     return img
-        // })
 
         this.container = options.dom
         this.width = this.container.offsetWidth
@@ -69,11 +66,8 @@ export default class Sketch {
         this.container.appendChild(this.renderer.domElement)
 
         let frustumSize = 1
-        // let aspect = window.innerWidth / window.innerHeight
-        // this.camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, -1000, 1000 );
         this.camera = new THREE.OrthographicCamera(frustumSize / -2, frustumSize / 2, frustumSize / 2, frustumSize / -2, -1000, 1000)
         this.camera.position.set(0, 0, 2)
-        // this.controls = new OrbitControls(this.camera, this.renderer.domElement)
         this.time = 0
 
         this.isPlaying = true
@@ -187,11 +181,9 @@ export default class Sketch {
                     }
                 },
                 matcap: {
-                    // value: new THREE.TextureLoader().load(matcap)
                     value: new THREE.TextureLoader().load(matcap0)
                 },
                 matcap2: {
-                    // value: new THREE.TextureLoader().load(matcap)
                     value: new THREE.TextureLoader().load(matcap1)
                 },
                 resolution: {

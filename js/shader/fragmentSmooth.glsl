@@ -80,7 +80,6 @@ vec2 sdf(vec3 p) {
     colorType = (mouseSphere - final) / (mouseSphere + final);
     if (colorType < 0.) colorType = mouseSphere;
     if (colorType > 1.) colorType = final;
-    //colorType = final / mouseSphere;
 
     return vec2(smin(final, mouseSphere, 0.4), colorType);
 }
@@ -118,25 +117,16 @@ void main() {
         vec3 pos = camPos + t * ray;
 //        color = vec3(1.);
         vec3 normal = calcNormal(pos);
-        color = normal;
+//        color = normal;
         float diff = dot(vec3(1.), normal);
         vec2 matcapUV = getMatcap(ray, normal);
-        //        color = vec3(diff);
 
-//        if (type<0.5){
-//            color = texture2D(matcap, matcapUV).rgb;
-//        } else {
-//            color = texture2D(matcap2, matcapUV).rgb;
-//        }
         color = mix(texture2D(matcap, matcapUV).rgb, texture2D(matcap2, matcapUV).rgb, type);
         //color.a =  0.5;
 
         float fresnel = pow(1. + dot(ray, normal), 3.);
-        //        color = vec3(fresnel);
-
         color = mix(color, bg, fresnel);
     }
 
     gl_FragColor = vec4(color, 1.);
-    //    gl_FragColor = vec4(fresnel);
 }
