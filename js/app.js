@@ -1,11 +1,13 @@
 import * as THREE from 'three'
 import Stats from 'three/examples/jsm/libs/stats.module.js'
 
-import fragment from './shader/fragment.glsl'
+import fragment from './shader/fragmentSmooth.glsl'
 import vertex from './shader/vertex.glsl'
 import * as dat from 'dat.gui'
-import matcap0 from '../img/sasha.png'
-import matcap1 from '../img/grey-gloss.png'
+import matcap0 from '../img/magic-green.jpg'
+import matcap1 from '../img/magic-blue.png'
+import matcap20 from '../img/sasha.png'
+import matcap21 from '../img/grey-gloss.png'
 import matcap2 from '../img/green-red-medium.png'
 import matcap3 from '../img/green-red-blur.png'
 import matcap4 from '../img/red-metal.png'
@@ -22,7 +24,7 @@ import matcap14 from '../img/steel.png'
 
 export default class Sketch {
     activeMatcapId = 0
-    activeMatcapId2 = 7
+    activeMatcapId2 = 1
     matcaps = [
         matcap0,
         matcap1,
@@ -190,7 +192,7 @@ export default class Sketch {
                 },
                 matcap2: {
                     // value: new THREE.TextureLoader().load(matcap)
-                    value: new THREE.TextureLoader().load(matcap8)
+                    value: new THREE.TextureLoader().load(matcap1)
                 },
                 resolution: {
                     type: 'v4',
