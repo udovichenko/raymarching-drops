@@ -1,0 +1,1 @@
+{"version":3,"sources":["styles\\common.scss"],"names":[],"mappings":"AAAA,EACE,QAAA,CACA,UAGF,OACE,cAGF,WACE,WAAA,CACA","file":"common.7f614633.css","sourceRoot":"..\\src","sourcesContent":["* {\n  margin: 0;\n  padding: 0\n}\n\ncanvas {\n  display: block\n}\n\n#container {\n  width: 100vw;\n  height: 100vh\n}"]}
