@@ -6,7 +6,8 @@ import fragment from '../shaders/fragmentDrops.glsl'
 import vertex from '../shaders/vertex.glsl'
 
 import * as dat from 'dat.gui'
-import matcapBlue from '../img/metal-blue.jpg'
+// import matcapBlue from '../img/metal-blue.jpg'
+import matcapBlue from '../img/metal-blue-alpha.png'
 import matcapGreen from '../img/metal-green.jpg'
 import matcapBlack from '../img/metal-oil.jpg'
 
@@ -22,6 +23,7 @@ export default class Drops {
         this.width = this.container.offsetWidth
         this.height = this.container.offsetHeight
         this.renderer = new THREE.WebGLRenderer({
+            alpha: true
             // antialias: true
         })
         // this.renderer.setPixelRatio(window.devicePixelRatio)

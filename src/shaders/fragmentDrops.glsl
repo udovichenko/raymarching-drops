@@ -51,6 +51,7 @@ float rand(vec2 co){
 vec2 sdf(vec3 p) {
     float colorType = 0.;
     vec3 p1 = rotate(p, vec3(1.), time / 5.);
+
 //    float s = 0.3 + 0.1 * sin(time/3.) + 0.2 * sin(time/6.) + 0.05 * sin(time);
 
     //float box = smin(sdBox(p1, vec3(0.2)), sdSphere(p, 0.2), 0.3);
@@ -95,7 +96,7 @@ vec3 calcNormal(in vec3 p) {
 
 void main() {
     float dist = length(vUv - vec2(0.5));
-    vec3 bg = mix(vec3(0.9), vec3(0.0), dist);
+    vec3 bg = mix(vec3(1), vec3(1), dist);
     vec2 newUV = (vUv - vec2(0.5))*resolution.zw + vec2(0.5);
     vec3 camPos = vec3(0., 0., 2.);
     vec3 ray = normalize(vec3((vUv - vec2(0.5)) * resolution.zw, -1));
@@ -113,7 +114,8 @@ void main() {
         t+=h;
     }
 
-    vec3 color = bg;
+//    vec3 color = bg;
+    vec4 color = vec4(bg, 1.);
     if (t<tMax) {
         vec3 pos = camPos + t * ray;
 //        color = vec3(1.);
@@ -122,12 +124,13 @@ void main() {
         float diff = dot(vec3(1.), normal);
         vec2 matcapUV = getMatcap(ray, normal);
 
-        color = mix(texture2D(matcapBlue, matcapUV).rgb, texture2D(matcapGreen, matcapUV).rgb, type);
+        color = mix(texture2D(matcapBlue, matcapUV).rgba, texture2D(matcapGreen, matcapUV).rgba, type);
         //color.a =  0.5;
 
         float fresnel = pow(1. + dot(ray, normal), 3.);
-        color = mix(color, bg, fresnel);
+        color = mix(color, vec4(bg, 1.), fresnel);
     }
 
-    gl_FragColor = vec4(color, 1.);
+//    gl_FragColor = vec4(color, 1.);
+    gl_FragColor = color;
 }
