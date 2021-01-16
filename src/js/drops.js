@@ -1,50 +1,16 @@
 import * as THREE from 'three'
 import Stats from 'three/examples/jsm/libs/stats.module.js'
 
-import fragment from './shader/fragmentSmooth.glsl'
-import vertex from './shader/vertex.glsl'
+import Sketch from './app'
+import fragment from '../shaders/fragmentDrops.glsl'
+import vertex from '../shaders/vertex.glsl'
+
 import * as dat from 'dat.gui'
-import matcap0 from '../img/metal-gold.jpg'
-import matcap1 from '../img/metal-grey.jpg'
-import matcap2 from '../img/green-red-medium.png'
-import matcap3 from '../img/green-red-blur.png'
-import matcap4 from '../img/red-metal.png'
-import matcap5 from '../img/solaris.png'
-import matcap6 from '../img/horizon.png'
-import matcap7 from '../img/black-gloss.png'
-import matcap8 from '../img/gold.jpg'
-import matcap9 from '../img/orange-metal.png'
-import matcap10 from '../img/yellow-violet-plastic.png'
-import matcap11 from '../img/grey-metal.png'
-import matcap12 from '../img/dark-violet.png'
-import matcap13 from '../img/space-grey.png'
-import matcap14 from '../img/steel.png'
-import matcap15 from '../img/sasha.png'
-import matcap16 from '../img/grey-gloss.png'
+import matcapBlue from '../img/metal-blue.jpg'
+import matcapGreen from '../img/metal-green.jpg'
+import matcapBlack from '../img/metal-oil.jpg'
 
-export default class Sketch {
-    activeMatcapId = 0
-    activeMatcapId2 = 1
-    matcaps = [
-        matcap0,
-        matcap1,
-        matcap2,
-        matcap3,
-        matcap4,
-        matcap5,
-        matcap6,
-        matcap7,
-        matcap8,
-        matcap9,
-        matcap10,
-        matcap11,
-        matcap12,
-        matcap13,
-        matcap14,
-        matcap15,
-        matcap16
-    ]
-
+export default class Drops {
     constructor(options) {
         this.scene = new THREE.Scene()
 
@@ -52,12 +18,14 @@ export default class Sketch {
         document.body.appendChild(this.stats.dom)
 
         this.container = options.dom
+        this.fragment = options.fragment
         this.width = this.container.offsetWidth
         this.height = this.container.offsetHeight
         this.renderer = new THREE.WebGLRenderer({
             // antialias: true
         })
-        this.renderer.setPixelRatio(window.devicePixelRatio)
+        // this.renderer.setPixelRatio(window.devicePixelRatio)
+        this.renderer.setPixelRatio(1)
         this.renderer.setSize(this.width, this.height)
         this.renderer.setClearColor(0xeeeeee, 1)
         this.renderer.physicallyCorrectLights = true
@@ -71,21 +39,6 @@ export default class Sketch {
         this.time = 0
 
         this.isPlaying = true
-
-        document.addEventListener('click', () => {
-            this.activeMatcapId = (this.activeMatcapId !== this.matcaps.length - 1)
-                ? this.activeMatcapId + 1
-                : 0
-
-            if (this.activeMatcapId2 > this.matcaps.length - 4) {
-                this.activeMatcapId2 = this.matcaps.length % this.activeMatcapId2
-            } else {
-                this.activeMatcapId2++
-            }
-
-            this.material.uniforms.matcap.value = new THREE.TextureLoader().load(this.matcaps[this.activeMatcapId])
-            this.material.uniforms.matcap2.value = new THREE.TextureLoader().load(this.matcaps[this.activeMatcapId2])
-        })
 
         this.mouseEvents()
         this.addObjects()
@@ -180,11 +133,14 @@ export default class Sketch {
                         value: new THREE.Vector2(0, 0)
                     }
                 },
-                matcap: {
-                    value: new THREE.TextureLoader().load(matcap0)
+                matcapBlue: {
+                    value: new THREE.TextureLoader().load(matcapBlue)
                 },
-                matcap2: {
-                    value: new THREE.TextureLoader().load(matcap1)
+                matcapGreen: {
+                    value: new THREE.TextureLoader().load(matcapGreen)
+                },
+                matcapBlack: {
+                    value: new THREE.TextureLoader().load(matcapBlack)
                 },
                 resolution: {
                     type: 'v4',
@@ -195,7 +151,7 @@ export default class Sketch {
                 }
             },
             vertexShader: vertex,
-            fragmentShader: fragment
+            fragmentShader: this.fragment
         })
 
         this.geometry = new THREE.PlaneGeometry(1, 1, 1, 1)
@@ -231,6 +187,10 @@ export default class Sketch {
     }
 }
 
-window.drops = new Sketch({
-    dom: document.getElementById('container')
+
+
+
+window.drops = new Drops({
+    dom: document.getElementById('container'),
+    fragment: fragment
 })
