@@ -8,7 +8,7 @@ import vertex from '../shaders/vertex.glsl'
 import * as dat from 'dat.gui'
 // import matcapBlue from '../img/metal-blue.jpg'
 import matcapBlue from '../img/metal-blue-alpha.png'
-import matcapGreen from '../img/metal-green.jpg'
+import matcapGreen from '../img/metal-green-crop.jpg'
 import matcapBlack from '../img/metal-oil.jpg'
 
 export default class Drops {
@@ -23,8 +23,8 @@ export default class Drops {
         this.width = this.container.offsetWidth
         this.height = this.container.offsetHeight
         this.renderer = new THREE.WebGLRenderer({
-            alpha: true
-            // antialias: true
+            alpha: true,
+            antialias: true
         })
         // this.renderer.setPixelRatio(window.devicePixelRatio)
         this.renderer.setPixelRatio(1)

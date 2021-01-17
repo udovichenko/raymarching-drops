@@ -52,38 +52,39 @@ vec2 sdf(vec3 p) {
     float colorType = 0.;
     vec3 p1 = rotate(p, vec3(1.), time / 5.);
 
-//    float s = 0.3 + 0.1 * sin(time/3.) + 0.2 * sin(time/6.) + 0.05 * sin(time);
-
+    //    float s = 0.3 + 0.1 * sin(time/3.) + 0.2 * sin(time/6.) + 0.05 * sin(time);
     //float box = smin(sdBox(p1, vec3(0.2)), sdSphere(p, 0.2), 0.3);
-//    float box = smin(sdBox(p1, vec3(s)), sdSphere(p, s), s);
+    //    float box = smin(sdBox(p1, vec3(s)), sdSphere(p, s), s);
 
-    float realsphere = sdSphere(p1, 0.3);
-//    float final = mix(box, realsphere, progress);
-    float final = realsphere;
+    float greenBall = sdSphere(p1, 0.3);
+    //    float final = mix(box, realsphere, progress);
     //float final = mix(box, realsphere, 0.5 + 0.5 * sin(time / 3.));
 
-//    for (float i=0.;i<2.;i++) {
-//        float randOffset = rand(vec2(i, 0.));
-//        float progr = 1. - fract(time/3. + randOffset);
-//        vec3 pos = vec3(sin(randOffset*2.*PI), cos(randOffset*2.*PI), 0);
-//        float gotoCenter = sdSphere(p - pos * progr, 0.1);
-//        final = smin(final, gotoCenter, 0.3);
-//    }
+    //    for (float i=0.;i<2.;i++) {
+    //        float randOffset = rand(vec2(i, 0.));
+    //        float progr = 1. - fract(time/3. + randOffset);
+    //        vec3 pos = vec3(sin(randOffset*2.*PI), cos(randOffset*2.*PI), 0);
+    //        float gotoCenter = sdSphere(p - pos * progr, 0.1);
+    //        final = smin(final, gotoCenter, 0.3);
+    //    }
 
-    float mouseSphereSize = 0.2 + 0.1 * sin(time);
-    float mouseSphere = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), mouseSphereSize);
-    if (mouseSphere<final) colorType = 1.;
+    // ПУЛЬСАЦИЯ
+    //float mouseSphereSize = 0.2 + 0.1 * sin(time);
+    float mouseSphereSize = 0.2;
+    float blueBall = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), mouseSphereSize);
 
-//    if (mouseSphere < 1.) {
-//        colorType = 1.;
-//    } else {
-//        colorType = mouseSphere;
-//    }
-    colorType = (mouseSphere - final) / (mouseSphere + final);
-    if (colorType < 0.) colorType = mouseSphere;
-    if (colorType > 1.) colorType = final;
+    if (blueBall < greenBall) colorType = 1.;
 
-    return vec2(smin(final, mouseSphere, 0.4), colorType);
+    //    if (mouseSphere < 1.) {
+    //        colorType = 1.;
+    //    } else {
+    //        colorType = mouseSphere;
+    //    }
+    colorType = (blueBall - greenBall) / (blueBall + greenBall);
+    if (colorType < 0.) colorType = blueBall;
+    if (colorType > 1.) colorType = greenBall;
+
+    return vec2(smin(greenBall, blueBall, 0.4), colorType);
 }
 
 vec3 calcNormal(in vec3 p) {
@@ -95,9 +96,9 @@ vec3 calcNormal(in vec3 p) {
 }
 
 void main() {
-    float dist = length(vUv - vec2(0.5));
-    vec3 bg = mix(vec3(1), vec3(1), dist);
-    vec2 newUV = (vUv - vec2(0.5))*resolution.zw + vec2(0.5);
+    //float dist = length(vUv - vec2(0.5));
+    vec4 bg = vec4(1., 1., 1., 0.1);
+    vec2 newUV = (vUv - vec2(0.5)) * resolution.zw + vec2(0.5);
     vec3 camPos = vec3(0., 0., 2.);
     vec3 ray = normalize(vec3((vUv - vec2(0.5)) * resolution.zw, -1));
 
@@ -114,23 +115,35 @@ void main() {
         t+=h;
     }
 
-//    vec3 color = bg;
-    vec4 color = vec4(bg, 1.);
-    if (t<tMax) {
+    //    vec3 color = bg;
+    vec4 color = vec4(bg);
+    if (t < tMax) {
         vec3 pos = camPos + t * ray;
-//        color = vec3(1.);
+        //        color = vec3(1.);
         vec3 normal = calcNormal(pos);
-//        color = normal;
+        //        color = normal;
         float diff = dot(vec3(1.), normal);
         vec2 matcapUV = getMatcap(ray, normal);
 
         color = mix(texture2D(matcapBlue, matcapUV).rgba, texture2D(matcapGreen, matcapUV).rgba, type);
         //color.a =  0.5;
 
-        float fresnel = pow(1. + dot(ray, normal), 3.);
-        color = mix(color, vec4(bg, 1.), fresnel);
+//        if (normal.z < 0.5) {
+//            //color.r = 1.;
+//            color.a = normal.z * normal.z;
+//        }
+//        color.a = 0.05;
+        //color.a = abs(normal.z);
+
+//        float alpha = normal.z;
+//        float alpha = pow(normal.z, 4.);
+//        color.a = alpha;
+
+        float fresnel = pow(1. + dot(ray, normal), 15.);
+        color = mix(color, vec4(.7, .7, .7, 0.), fresnel);
     }
 
-//    gl_FragColor = vec4(color, 1.);
+    //    gl_FragColor = vec4(color, 1.);
+
     gl_FragColor = color;
 }
