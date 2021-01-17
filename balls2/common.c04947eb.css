@@ -1,0 +1,2 @@
+*{padding:0}*,body{margin:0}canvas{display:block}#container{width:100vw;height:100vh;position:relative}.slide{position:absolute;left:0;top:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-transform:uppercase}h1{font-size:calc(20px + 6vw)}h1,h2{font-family:sans-serif}h2{font-size:calc(10px + 2.5vw)}
+/*# sourceMappingURL=common.c04947eb.css.map */
