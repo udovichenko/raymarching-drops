@@ -12,5 +12,5 @@ https://udovichenko.github.io/raymarching-drops/dist/
 ## Build for github pages
 
 ```
-parcel build index.html --public-url ./
+parcel build src/index.html --public-url ./
 ```
