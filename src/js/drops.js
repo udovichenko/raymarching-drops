@@ -1,22 +1,30 @@
 import * as THREE from 'three'
 import Stats from 'three/examples/jsm/libs/stats.module.js'
-
-import Sketch from './app'
 import fragment from '../shaders/fragmentDrops.glsl'
 import vertex from '../shaders/vertex.glsl'
-
-import * as dat from 'dat.gui'
 // import matcapBlue from '../img/metal-blue.jpg'
 import matcapBlue from '../img/metal-blue-alpha.png'
 import matcapGreen from '../img/metal-green-crop.jpg'
 import matcapBlack from '../img/metal-oil.jpg'
+import {randomMotionFunc} from './randomMotionFunc'
 
 export default class Drops {
+    moveFuncs = []
+
+
+    // [0, 0, 0]
+    // [100, 100, 100]
+    // [50, 50, 50]
+
     constructor(options) {
         this.scene = new THREE.Scene()
 
         this.stats = new Stats()
         document.body.appendChild(this.stats.dom)
+
+        for (let i = 0; i < 3 * 3; i++) {
+            this.moveFuncs.push(randomMotionFunc())
+        }
 
         this.container = options.dom
         this.fragment = options.fragment
@@ -135,6 +143,12 @@ export default class Drops {
                         value: new THREE.Vector2(0, 0)
                     }
                 },
+                greenBallCoords: {
+                    value: new THREE.Vector3(0, 0, 0)
+                },
+                blueBallCoords: {
+                    value: new THREE.Vector3(0, 0, 0)
+                },
                 matcapBlue: {
                     value: new THREE.TextureLoader().load(matcapBlue)
                 },
@@ -176,6 +190,30 @@ export default class Drops {
     render() {
         if (!this.isPlaying) return
         this.time += 0.05
+
+        let counter = 0
+
+        // for (let i = 0; i < 3; i++) {
+        //     let x = .2 * this.moveFuncs[counter++](this.time / 5)
+        //     let y = .2 * this.moveFuncs[counter++](this.time / 5)
+        //     let z = .2 * this.moveFuncs[counter++](this.time / 5)
+        // }
+
+        let distance = .4
+        let motionTime = this.time / 10
+
+        this.material.uniforms.greenBallCoords.value = [
+            distance * this.moveFuncs[counter++](motionTime),
+            distance * this.moveFuncs[counter++](motionTime),
+            distance * this.moveFuncs[counter++](motionTime)
+        ]
+
+        this.material.uniforms.blueBallCoords.value = [
+            distance * this.moveFuncs[counter++](motionTime),
+            distance * this.moveFuncs[counter++](motionTime),
+            distance * this.moveFuncs[counter++](motionTime)
+        ]
+
         this.material.uniforms.time.value = this.time
         this.material.uniforms.progress.value = this.settings.progress
         //this.material.uniforms.progress.value = Math.sin(this.time) / 2 + 0.5
@@ -188,8 +226,6 @@ export default class Drops {
         this.stats.update()
     }
 }
-
-
 
 
 window.drops = new Drops({

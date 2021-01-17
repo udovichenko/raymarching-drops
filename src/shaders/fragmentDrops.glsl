@@ -1,6 +1,8 @@
 uniform float time;
 uniform float progress;
 uniform vec2 mouse;
+uniform vec3 greenBallCoords;
+uniform vec3 blueBallCoords;
 uniform sampler2D matcapBlue;
 uniform sampler2D matcapGreen;
 uniform vec4 resolution;
@@ -56,7 +58,8 @@ vec2 sdf(vec3 p) {
     //float box = smin(sdBox(p1, vec3(0.2)), sdSphere(p, 0.2), 0.3);
     //    float box = smin(sdBox(p1, vec3(s)), sdSphere(p, s), s);
 
-    float greenBall = sdSphere(p1, 0.3);
+//    float greenBall = sdSphere(p1, 0.3);
+    float greenBall = sdSphere(p - greenBallCoords, 0.25);
     //    float final = mix(box, realsphere, progress);
     //float final = mix(box, realsphere, 0.5 + 0.5 * sin(time / 3.));
 
@@ -70,8 +73,9 @@ vec2 sdf(vec3 p) {
 
     // ПУЛЬСАЦИЯ
     //float mouseSphereSize = 0.2 + 0.1 * sin(time);
-    float mouseSphereSize = 0.2;
-    float blueBall = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), mouseSphereSize);
+    //float mouseSphereSize = 0.2;
+//    float blueBall = sdSphere(p - vec3(mouse * resolution.zw * 2., 0.), mouseSphereSize);
+    float blueBall = sdSphere(p - blueBallCoords, 0.25);
 
     if (blueBall < greenBall) colorType = 1.;
 
@@ -97,7 +101,7 @@ vec3 calcNormal(in vec3 p) {
 
 void main() {
     //float dist = length(vUv - vec2(0.5));
-    vec4 bg = vec4(1., 1., 1., 0.1);
+    vec4 bg = vec4(.0, .0, .0, .0);
     vec2 newUV = (vUv - vec2(0.5)) * resolution.zw + vec2(0.5);
     vec3 camPos = vec3(0., 0., 2.);
     vec3 ray = normalize(vec3((vUv - vec2(0.5)) * resolution.zw, -1));
@@ -107,12 +111,12 @@ void main() {
     float tMax = 5.;
     float type = -1.;
 
-    for (int i=0;i<512;++i) {
+    for (int i = 0; i < 512; ++i) {
         vec3 pos = camPos + t*ray;
         float h = sdf(pos).x;
         type = sdf(pos).y;
-        if (h<0.0001 || t>tMax) break;
-        t+=h;
+        if (h < 0.0001 || t > tMax) break;
+        t += h;
     }
 
     //    vec3 color = bg;
@@ -128,16 +132,16 @@ void main() {
         color = mix(texture2D(matcapBlue, matcapUV).rgba, texture2D(matcapGreen, matcapUV).rgba, type);
         //color.a =  0.5;
 
-//        if (normal.z < 0.5) {
-//            //color.r = 1.;
-//            color.a = normal.z * normal.z;
-//        }
-//        color.a = 0.05;
+        //        if (normal.z < 0.5) {
+        //            //color.r = 1.;
+        //            color.a = normal.z * normal.z;
+        //        }
+        //        color.a = 0.05;
         //color.a = abs(normal.z);
 
-//        float alpha = normal.z;
-//        float alpha = pow(normal.z, 4.);
-//        color.a = alpha;
+        //        float alpha = normal.z;
+        //        float alpha = pow(normal.z, 4.);
+        //        color.a = alpha;
 
         float fresnel = pow(1. + dot(ray, normal), 15.);
         color = mix(color, vec4(.7, .7, .7, 0.), fresnel);
